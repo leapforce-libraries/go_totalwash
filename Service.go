@@ -42,44 +42,44 @@ func NewService(domain string, username string, password string) (*Service, *err
 
 // generic Get method
 //
-func (service *Service) get(urlPath string, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodGet, urlPath, nil, responseModel)
+func (service *Service) get(config *oauth2.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+	return service.httpRequest(http.MethodGet, config)
 }
 
 // generic Post method
 //
-func (service *Service) post(urlPath string, bodyModel interface{}, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodPost, urlPath, bodyModel, responseModel)
+func (service *Service) post(config *oauth2.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+	return service.httpRequest(http.MethodPost, config)
 }
 
 // generic Put method
 //
-func (service *Service) put(urlPath string, bodyModel interface{}, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodPut, urlPath, bodyModel, responseModel)
+func (service *Service) put(config *oauth2.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+	return service.httpRequest(http.MethodPut, config)
 }
 
 // generic Patch method
 //
-func (service *Service) patch(urlPath string, bodyModel interface{}, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodPatch, urlPath, bodyModel, responseModel)
+func (service *Service) patch(config *oauth2.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+	return service.httpRequest(http.MethodPatch, config)
 }
 
 // generic Delete method
 //
-func (service *Service) delete(urlPath string, bodyModel interface{}, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodDelete, urlPath, bodyModel, responseModel)
+func (service *Service) delete(config *oauth2.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+	return service.httpRequest(http.MethodDelete, config)
 }
 
-func (service *Service) httpRequest(httpMethod string, urlPath string, bodyModel interface{}, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
-	url := fmt.Sprintf("https://%s.%s/integration/%s", service.domain, Host, urlPath)
-	fmt.Println(url)
+func (service *Service) url(path string) string {
+	return fmt.Sprintf("https://%s.%s/integration/%s", service.domain, Host, path)
+}
 
+func (service *Service) httpRequest(httpMethod string, config *oauth2.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
 	e := new(errortools.Error)
 
 	errorResponse := ErrorResponse{}
 
-	request, response, e := service.oAuth2.HTTP(httpMethod, url, bodyModel, responseModel, &errorResponse)
-
+	request, response, e := service.oAuth2.HTTP(httpMethod, config)
 	if e != nil {
 		if errorResponse.ErrorDescription != "" {
 			e.SetMessage(errorResponse.ErrorDescription)

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
+	oauth2 "github.com/leapforce-libraries/go_oauth2"
 )
 
 type GeneratedCouponCodes struct {
@@ -36,7 +37,13 @@ func (service *Service) GenerateCouponCodes(campaignID string, count uint, expir
 	}
 	generatedCouponCodes := GeneratedCouponCodes{}
 
-	_, _, e := service.post("api/couponcodes/Generate", body, &generatedCouponCodes)
+	requestConfig := oauth2.RequestConfig{
+		URL:           service.url("api/couponcodes/Generate"),
+		BodyModel:     body,
+		ResponseModel: &generatedCouponCodes,
+	}
+
+	_, _, e := service.post(&requestConfig)
 	if e != nil {
 		return nil, e
 	}

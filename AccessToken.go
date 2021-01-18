@@ -28,7 +28,18 @@ func (service *Service) GetAccessToken() (*oauth2.Token, *errortools.Error) {
 
 	accessToken := AccessToken{}
 
-	_, _, e := service.post("token", body, &accessToken)
+	skipAccessToken := true
+	xWWWFormURLEncoded := true
+
+	requestConfig := oauth2.RequestConfig{
+		URL:                service.url("token"),
+		BodyModel:          body,
+		ResponseModel:      &accessToken,
+		SkipAccessToken:    &skipAccessToken,
+		XWWWFormURLEncoded: &xWWWFormURLEncoded,
+	}
+
+	_, _, e := service.post(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
