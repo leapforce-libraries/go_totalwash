@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
+	go_http "github.com/leapforce-libraries/go_http"
 	oauth2 "github.com/leapforce-libraries/go_oauth2"
 )
 
@@ -33,53 +34,54 @@ func NewService(domain string, username string, password string) (*Service, *err
 		return service.GetAccessToken()
 	}
 
-	config := oauth2.OAuth2Config{
+	requestConfig := oauth2.OAuth2Config{
 		NewTokenFunction: &tokenFunction,
 	}
-	service.oAuth2 = oauth2.NewOAuth(config)
+	service.oAuth2 = oauth2.NewOAuth(requestConfig)
 	return &service, nil
 }
 
 // generic Get method
 //
-func (service *Service) get(config *oauth2.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodGet, config)
+func (service *Service) get(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+	return service.oAuth2.Get(requestConfig)
 }
 
 // generic Post method
 //
-func (service *Service) post(config *oauth2.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodPost, config)
+func (service *Service) post(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+	return service.oAuth2.Post(requestConfig)
 }
 
 // generic Put method
 //
-func (service *Service) put(config *oauth2.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodPut, config)
+func (service *Service) put(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+	return service.oAuth2.Put(requestConfig)
 }
 
 // generic Patch method
 //
-func (service *Service) patch(config *oauth2.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodPatch, config)
+func (service *Service) patch(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+	return service.oAuth2.Patch(requestConfig)
 }
 
 // generic Delete method
 //
-func (service *Service) delete(config *oauth2.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodDelete, config)
+func (service *Service) delete(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+	return service.oAuth2.Delete(requestConfig)
 }
 
 func (service *Service) url(path string) string {
 	return fmt.Sprintf("https://%s.%s/integration/%s", service.domain, Host, path)
 }
 
-func (service *Service) httpRequest(httpMethod string, config *oauth2.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+func (service *Service) httpRequest(httpMethod string, requestConfig *go_http.RequestConfig, skipAccessToken bool) (*http.Request, *http.Response, *errortools.Error) {
 	e := new(errortools.Error)
 
 	errorResponse := ErrorResponse{}
+	requestConfig.ErrorModel = &errorResponse
 
-	request, response, e := service.oAuth2.HTTP(httpMethod, config)
+	request, response, e := service.oAuth2.HTTPRequest(httpMethod, requestConfig, skipAccessToken)
 	if e != nil {
 		if errorResponse.ErrorDescription != "" {
 			e.SetMessage(errorResponse.ErrorDescription)

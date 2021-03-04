@@ -2,8 +2,10 @@ package totalwash
 
 import (
 	"encoding/json"
+	"net/http"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
+	go_http "github.com/leapforce-libraries/go_http"
 	oauth2 "github.com/leapforce-libraries/go_oauth2"
 )
 
@@ -28,18 +30,16 @@ func (service *Service) GetAccessToken() (*oauth2.Token, *errortools.Error) {
 
 	accessToken := AccessToken{}
 
-	skipAccessToken := true
 	xWWWFormURLEncoded := true
 
-	requestConfig := oauth2.RequestConfig{
+	requestConfig := go_http.RequestConfig{
 		URL:                service.url("token"),
 		BodyModel:          body,
 		ResponseModel:      &accessToken,
-		SkipAccessToken:    &skipAccessToken,
 		XWWWFormURLEncoded: &xWWWFormURLEncoded,
 	}
 
-	_, _, e := service.post(&requestConfig)
+	_, _, e := service.httpRequest(http.MethodPost, &requestConfig, true)
 	if e != nil {
 		return nil, e
 	}
