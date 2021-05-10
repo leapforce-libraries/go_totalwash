@@ -22,7 +22,7 @@ func (service *Service) GenerateCouponCodes(campaignID string, count uint, expir
 	expirationDate = nil
 
 	if expiry != nil {
-		expirationDate_ := expiry.Format(DateFormat)
+		expirationDate_ := expiry.Format(dateLayout)
 		expirationDate = &expirationDate_
 	}
 

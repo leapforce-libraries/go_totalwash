@@ -11,68 +11,85 @@ import (
 )
 
 const (
-	Host                 string = "carwash-cms.com"
-	AccessTokenGrantType string = "password"
-	DateFormat           string = "2006-01-02T15:04:05"
+	apiName              string = "totalwash"
+	host                 string = "carwash-cms.com"
+	accessTokenGrantType string = "password"
+	dateLayout           string = "2006-01-02T15:04:05"
 )
 
-// Service stores Service configuration
-//
+type ServiceConfig struct {
+	Domain   string
+	Username string
+	Password string
+}
+
 type Service struct {
-	domain   string
-	username string
-	password string
-	oAuth2   *oauth2.OAuth2
+	domain        string
+	username      string
+	password      string
+	oAuth2Service *oauth2.Service
 }
 
 // methods
 //
-func NewService(domain string, username string, password string) (*Service, *errortools.Error) {
-	service := Service{domain: domain, username: username, password: password}
+func NewService(serviceConfig *ServiceConfig) (*Service, *errortools.Error) {
+	if serviceConfig == nil {
+		return nil, errortools.ErrorMessage("ServiceConfig must not be a nil pointer")
+	}
+
+	service := Service{
+		domain:   serviceConfig.Domain,
+		username: serviceConfig.Username,
+		password: serviceConfig.Password,
+	}
 
 	tokenFunction := func() (*oauth2.Token, *errortools.Error) {
 		return service.GetAccessToken()
 	}
 
-	requestConfig := oauth2.OAuth2Config{
+	oAuth2ServiceConfig := oauth2.ServiceConfig{
 		NewTokenFunction: &tokenFunction,
 	}
-	service.oAuth2 = oauth2.NewOAuth(requestConfig)
+	oauth2Service, e := oauth2.NewService(&oAuth2ServiceConfig)
+	if e != nil {
+		return nil, e
+	}
+	service.oAuth2Service = oauth2Service
 	return &service, nil
 }
 
 // generic Get method
 //
 func (service *Service) get(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.oAuth2.Get(requestConfig)
+	return service.oAuth2Service.Get(requestConfig)
 }
 
 // generic Post method
 //
 func (service *Service) post(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.oAuth2.Post(requestConfig)
+	return service.oAuth2Service.Post(requestConfig)
 }
 
 // generic Put method
 //
 func (service *Service) put(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.oAuth2.Put(requestConfig)
+	return service.oAuth2Service.Put(requestConfig)
 }
 
 // generic Patch method
 //
 func (service *Service) patch(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.oAuth2.Patch(requestConfig)
+	return service.oAuth2Service.Patch(requestConfig)
 }
 
 // generic Delete method
 //
 func (service *Service) delete(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.oAuth2.Delete(requestConfig)
+	return service.oAuth2Service.Delete(requestConfig)
 }
 
 func (service *Service) url(path string) string {
-	return fmt.Sprintf("https://%s.%s/integration/%s", service.domain, Host, path)
+	return fmt.Sprintf("https://%s.%s/integration/%s", service.domain, host, path)
 }
 
 func (service *Service) httpRequest(httpMethod string, requestConfig *go_http.RequestConfig, skipAccessToken bool) (*http.Request, *http.Response, *errortools.Error) {
@@ -81,7 +98,7 @@ func (service *Service) httpRequest(httpMethod string, requestConfig *go_http.Re
 	errorResponse := ErrorResponse{}
 	requestConfig.ErrorModel = &errorResponse
 
-	request, response, e := service.oAuth2.HTTPRequest(httpMethod, requestConfig, skipAccessToken)
+	request, response, e := service.oAuth2Service.HTTPRequest(httpMethod, requestConfig, skipAccessToken)
 	if e != nil {
 		if errorResponse.ErrorDescription != "" {
 			e.SetMessage(errorResponse.ErrorDescription)
@@ -94,4 +111,16 @@ func (service *Service) httpRequest(httpMethod string, requestConfig *go_http.Re
 	}
 
 	return request, response, e
+}
+
+func (service Service) APIName() string {
+	return apiName
+}
+
+func (service Service) APIKey() string {
+	return service.username
+}
+
+func (service Service) APICallCount() int64 {
+	return service.oAuth2Service.APICallCount()
 }

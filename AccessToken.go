@@ -25,7 +25,7 @@ func (service *Service) GetAccessToken() (*oauth2.Token, *errortools.Error) {
 	}{
 		service.username,
 		service.password,
-		AccessTokenGrantType,
+		accessTokenGrantType,
 	}
 
 	accessToken := AccessToken{}
