@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	apiName              string = "totalwash"
+	apiName              string = "TotalWash"
 	host                 string = "carwash-cms.com"
 	accessTokenGrantType string = "password"
 	dateLayout           string = "2006-01-02T15:04:05"
