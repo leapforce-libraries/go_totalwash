@@ -124,3 +124,7 @@ func (service Service) APIKey() string {
 func (service Service) APICallCount() int64 {
 	return service.oAuth2Service.APICallCount()
 }
+
+func (service Service) APIReset() {
+	service.oAuth2Service.APIReset()
+}
