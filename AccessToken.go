@@ -33,13 +33,14 @@ func (service *Service) GetAccessToken() (*oauth2.Token, *errortools.Error) {
 	xWWWFormURLEncoded := true
 
 	requestConfig := go_http.RequestConfig{
+		Method:             http.MethodPost,
 		URL:                service.url("token"),
 		BodyModel:          body,
 		ResponseModel:      &accessToken,
 		XWWWFormURLEncoded: &xWWWFormURLEncoded,
 	}
 
-	_, _, e := service.httpRequest(http.MethodPost, &requestConfig, true)
+	_, _, e := service.httpRequestWithoutAccessToken(&requestConfig)
 	if e != nil {
 		return nil, e
 	}

@@ -1,6 +1,7 @@
 package totalwash
 
 import (
+	"net/http"
 	"time"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
@@ -18,8 +19,7 @@ func (service *Service) GenerateCouponCodes(campaignID string, count uint, expir
 		return nil, nil
 	}
 
-	expirationDate := new(string)
-	expirationDate = nil
+	var expirationDate *string = nil
 
 	if expiry != nil {
 		expirationDate_ := expiry.Format(dateLayout)
@@ -38,12 +38,13 @@ func (service *Service) GenerateCouponCodes(campaignID string, count uint, expir
 	generatedCouponCodes := GeneratedCouponCodes{}
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodPost,
 		URL:           service.url("api/couponcodes/Generate"),
 		BodyModel:     body,
 		ResponseModel: &generatedCouponCodes,
 	}
 
-	_, _, e := service.post(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
