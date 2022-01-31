@@ -43,12 +43,13 @@ func NewService(serviceConfig *ServiceConfig) (*Service, *errortools.Error) {
 		password: serviceConfig.Password,
 	}
 
-	tokenFunction := func() (*oauth2.Token, *errortools.Error) {
-		return service.GetAccessToken()
+	tokenSource, e := NewTokenSource(&service)
+	if e != nil {
+		return nil, e
 	}
 
 	oAuth2ServiceConfig := oauth2.ServiceConfig{
-		NewTokenFunction: &tokenFunction,
+		TokenSource: tokenSource,
 	}
 	oauth2Service, e := oauth2.NewService(&oAuth2ServiceConfig)
 	if e != nil {
