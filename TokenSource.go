@@ -6,12 +6,11 @@ import (
 
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
-	go_oauth2 "github.com/leapforce-libraries/go_oauth2"
-	oauth2 "github.com/leapforce-libraries/go_oauth2"
+	go_token "github.com/leapforce-libraries/go_oauth2/token"
 )
 
 type TokenSource struct {
-	token   *go_oauth2.Token
+	token   *go_token.Token
 	service *Service
 }
 
@@ -25,11 +24,11 @@ func NewTokenSource(service *Service) (*TokenSource, *errortools.Error) {
 	}, nil
 }
 
-func (t *TokenSource) Token() *go_oauth2.Token {
+func (t *TokenSource) Token() *go_token.Token {
 	return t.token
 }
 
-func (t *TokenSource) NewToken() (*go_oauth2.Token, *errortools.Error) {
+func (t *TokenSource) NewToken() (*go_token.Token, *errortools.Error) {
 
 	body := struct {
 		Username  string `json:"username"`
@@ -61,16 +60,14 @@ func (t *TokenSource) NewToken() (*go_oauth2.Token, *errortools.Error) {
 	expiresIn, _ := json.Marshal(accessToken.ExpiresIn)
 	expiresInJson := json.RawMessage(expiresIn)
 
-	t.token = &oauth2.Token{
+	return &go_token.Token{
 		AccessToken: &accessToken.AccessToken,
 		ExpiresIn:   &expiresInJson,
 		TokenType:   &accessToken.TokenType,
-	}
-
-	return nil, nil
+	}, nil
 }
 
-func (t *TokenSource) SetToken(token *go_oauth2.Token, save bool) *errortools.Error {
+func (t *TokenSource) SetToken(token *go_token.Token, save bool) *errortools.Error {
 	t.token = token
 
 	if !save {
