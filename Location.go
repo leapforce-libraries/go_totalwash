@@ -8,7 +8,7 @@ import (
 )
 
 type Location struct {
-	ExternalID  int64 `json:"externalid"`
+	ExternalID  int64  `json:"externalid"`
 	Code        string `json:"code"`
 	Description string `json:"description"`
 	Street      string `json:"street"`
@@ -19,14 +19,14 @@ type Location struct {
 
 func (service *Service) GetLocations() (*[]Location, *errortools.Error) {
 	locationsResponse := struct {
-		Success  bool      `json:"success"`
-		Remark   string    `json:"remark"`
+		Success   bool       `json:"success"`
+		Remark    string     `json:"remark"`
 		Locations []Location `json:"locations"`
 	}{}
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url("api/transactions/Locations"),
+		Url:           service.url("api/transactions/Locations"),
 		ResponseModel: &locationsResponse,
 	}
 

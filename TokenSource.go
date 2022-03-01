@@ -42,14 +42,14 @@ func (t *TokenSource) NewToken() (*go_token.Token, *errortools.Error) {
 
 	accessToken := AccessToken{}
 
-	xWWWFormURLEncoded := true
+	xWwwFormUrlEncoded := true
 
 	requestConfig := go_http.RequestConfig{
 		Method:             http.MethodPost,
-		URL:                t.service.url("token"),
+		Url:                t.service.url("token"),
 		BodyModel:          body,
 		ResponseModel:      &accessToken,
-		XWWWFormURLEncoded: &xWWWFormURLEncoded,
+		XWwwFormUrlEncoded: &xWwwFormUrlEncoded,
 	}
 
 	_, _, e := t.service.httpRequestWithoutAccessToken(&requestConfig)

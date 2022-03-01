@@ -67,7 +67,7 @@ func (service *Service) httpRequest(requestConfig *go_http.RequestConfig) (*http
 	errorResponse := ErrorResponse{}
 	requestConfig.ErrorModel = &errorResponse
 
-	request, response, e := service.oAuth2Service.HTTPRequest(requestConfig)
+	request, response, e := service.oAuth2Service.HttpRequest(requestConfig)
 	if e != nil {
 		if errorResponse.ErrorDescription != "" {
 			e.SetMessage(errorResponse.ErrorDescription)
@@ -86,7 +86,7 @@ func (service *Service) httpRequestWithoutAccessToken(requestConfig *go_http.Req
 	errorResponse := ErrorResponse{}
 	requestConfig.ErrorModel = &errorResponse
 
-	request, response, e := service.oAuth2Service.HTTPRequestWithoutAccessToken(requestConfig)
+	request, response, e := service.oAuth2Service.HttpRequestWithoutAccessToken(requestConfig)
 	if e != nil {
 		if errorResponse.ErrorDescription != "" {
 			e.SetMessage(errorResponse.ErrorDescription)
@@ -101,18 +101,18 @@ func (service *Service) httpRequestWithoutAccessToken(requestConfig *go_http.Req
 	return request, response, e
 }
 
-func (service Service) APIName() string {
+func (service Service) ApiName() string {
 	return apiName
 }
 
-func (service Service) APIKey() string {
+func (service Service) ApiKey() string {
 	return service.username
 }
 
-func (service Service) APICallCount() int64 {
-	return service.oAuth2Service.APICallCount()
+func (service Service) ApiCallCount() int64 {
+	return service.oAuth2Service.ApiCallCount()
 }
 
-func (service Service) APIReset() {
-	service.oAuth2Service.APIReset()
+func (service Service) ApiReset() {
+	service.oAuth2Service.ApiReset()
 }

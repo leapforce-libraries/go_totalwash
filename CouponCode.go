@@ -39,7 +39,7 @@ func (service *Service) GenerateCouponCodes(campaignID string, count uint, expir
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodPost,
-		URL:           service.url("api/couponcodes/Generate"),
+		Url:           service.url("api/couponcodes/Generate"),
 		BodyModel:     body,
 		ResponseModel: &generatedCouponCodes,
 	}

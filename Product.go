@@ -30,7 +30,7 @@ func (service *Service) GetProducts() (*[]Product, *errortools.Error) {
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url("api/transactions/Products"),
+		Url:           service.url("api/transactions/Products"),
 		ResponseModel: &productsResponse,
 	}
 
