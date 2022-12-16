@@ -7,6 +7,7 @@ import (
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
 	go_token "github.com/leapforce-libraries/go_oauth2/token"
+	go_tokenmap "github.com/leapforce-libraries/go_oauth2/tokenmap"
 )
 
 type TokenSource struct {
@@ -83,4 +84,10 @@ func (t *TokenSource) RetrieveToken() *errortools.Error {
 
 func (t *TokenSource) SaveToken() *errortools.Error {
 	return nil
+}
+
+func (m *TokenSource) UnmarshalToken(b []byte) (*go_token.Token, *errortools.Error) {
+	var tokenMap go_tokenmap.TokenMap
+
+	return tokenMap.UnmarshalToken(b)
 }
